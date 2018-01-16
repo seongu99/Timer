@@ -5,13 +5,12 @@
     <title></title>
   </head>
   <body>
-    <form action="/timer" method="post">
-      아이디: <input type="text" name="name" value=""><br />
-      비밀번호: <input type="text" name="pwd" value=""><br />
-      이메일: <input type="text" name="email" value=""><br />
-      <input type="submit">
+    <h1>전세계사람들과 집중시간을 겨루세요. </h1>
+    <form action="/memberCheck" method="post">
+      <input type="text" name="name" value="">
+      <input type="password" name="pwd" value="">
+      <input type="submit" name="login" value="login">
     </form>
-
-
+    <a href="/signup">회원가입</a>
   </body>
 </html>
