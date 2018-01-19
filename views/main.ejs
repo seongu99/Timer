@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>Main Page</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/timer.css">
   </head>
   <body>
     <h1>메인 페이지입니다.</h1>
@@ -11,5 +13,62 @@
 
 
     </div>
+    <div class="timer">
+        <input class="timeBox" id="timeHour" type="number" name="hour" value="0"/>H
+        <input class="timeBox" id="timeMin" type="number" name="min" value="30"/>M
+        <input class="timeBox" id="timeSec" type="number" name="sec" value="0"/>S
+
+      <div class="buttonBox" id="startButton">
+        START
+      </div>
+      <div class="buttonBox" id="pauseButton">
+        PAUSE
+      </div>
+      <div class="buttonBox" id="stopButton">
+        STOP
+      </div>
+    <script>
+    $(document).on('click', '#startButton', function(){
+      var new_hour = parseInt(document.getElementById("timeHour").value);
+      var new_min = parseInt(document.getElementById("timeMin").value);
+      var new_sec = parseInt(document.getElementById("timeSec").value);
+
+      var iSecond = new_hour*3600 + new_min * 60 + new_sec;
+
+      runningTimer = setInterval(function(){
+        if(!isTimeOver()){
+          new_hour = parseInt(iSecond/3600);
+          new_min = parseInt((iSecond%3600)/60);
+          new_sec = parseInt((iSecond%3600)%60);
+          document.getElementById('timeHour').value = new_hour;
+          document.getElementById('timeMin').value = new_min;
+          document.getElementById('timeSec').value = new_sec;
+
+          iSecond--;
+        } else {
+          clearInterval(runningTimer);
+          alert("time is up");
+        }
+    },1000);
+
+    function isTimeOver() {
+      if(iSecond < 0) return true;
+    }
+    });
+
+    $(document).on('click','#pauseButton', function(){
+      clearInterval(runningTimer);
+      document.getElementById('startButton').innerHTML = 'RESUME';
+    });
+
+    $(document).on('click','#stopButton', function(){
+      clearInterval(runningTimer);
+      document.getElementById('timeHour').value = 0;
+      document.getElementById('timeMin').value = 30;
+      document.getElementById('timeSec').value = 0;
+
+    });
+
+    </script>
   </body>
 </html>

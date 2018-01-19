@@ -1,0 +1,7 @@
+.timer{
+  background-color: red;
+}
+.buttonBox {
+  display: inline-block;
+  border: solid;
+}
