@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var mongoose = require('mongoose');
+var url = require('url');
 var User = require('./models/user');
 
 mongoose.connect('mongodb://localhost:27017/testDB3');
@@ -26,44 +27,70 @@ app.get('/signup' , function(req, res){
   res.render('signup.ejs');
 });
 
-app.post('/memberCheck', function(req, res) {
-  User.findOne({name:req.body.name,pwd:req.body.pwd},function(err, user){
-    if(err){
-      return res.status(500).json({error:err});
-    }else if(user){
-
-      res.render('main.ejs',{name:req.body.name});
-    } else{
-      res.render('index.ejs');
-    }
-  });
-});
-
 app.post('/signup', function(req, res) {
   User.findOne({name:req.body.name}, function(err, user){
     if(err){
-      return res.status(500).json({error:err}) ;
+      return res.status(500).json({error:err}) ;//webserver error
     } else if(!user) {
-      var newUser = new User({name:req.body.name, pwd:req.body.pwd, email:req.body.email});
+      var newUser = new User({name:req.body.name, pwd:req.body.pwd, email:req.body.email, accumTime:0});
 
       newUser.save(function(error, data){
-          if(error){
-              console.log(error);
+          if(err){
+              console.log(err);
           }else{
-              console.log('Saved!');
+              console.log('New User Saved!'+data);
           }
       });
-      res.render('main.ejs',{name:req.body.name});
-
+      res.redirect(url.format({
+        pathname:"/main",
+        query: {
+          "name":req.body.name
+        }
+      }));
     } else{
-
       res.render('signup.ejs');
     }
   });
 
 });
 
+app.post('/memberCheck', function(req, res) {
+  User.findOne({name:req.body.name,pwd:req.body.pwd},function(err, user){
+    if(err){
+      return res.status(500).json({error:err});
+    }else if(user){
+      res.redirect(url.format({
+        pathname:"/main",
+        query:{
+          "name":req.body.name
+        }
+      }));
+    } else{
+      res.redirect('/');
+    }
+  });
+});
 
+app.get('/main', function(req,res) {
+  res.render('main.ejs',{userName:req.query.name});
+});
+
+app.put('/admin/update', function(req,res) {
+  console.log(req.body.name);
+
+  User.findOne({name:req.body.name}, function(err, user) {
+    User.update({name:req.body.name},{$set:{accumTime:Number(user.accumTime)+Number(req.body.time)}}, function(err, output) {
+      if(err) res.status(500).json({ error: 'database failure' });
+      console.log(output);
+    });
+
+  });
+
+
+
+});
+
+app.use(express.static(__dirname + '/public'));
 app.listen(3000, function(){
   console.log('connected 3000port!');
 });
