@@ -20,6 +20,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/', function(req, res){
+
   res.render('index.ejs');
 });
 
@@ -59,10 +60,23 @@ app.post('/memberCheck', function(req, res) {
     if(err){
       return res.status(500).json({error:err});
     }else if(user){
+      //해당 유저 빼고 or 모든 유저 이름and시간 가져오기
+      var param = {
+      };
+      User.find(function(err,users){
+      if(err) return res.status(500).send({error: 'database failure'});
+
+      console.log(users);
+      console.log(JSON.stringify(users));
+
+      });
+
       res.redirect(url.format({
         pathname:"/main",
         query:{
-          "name":req.body.name
+          "name":req.body.name,
+          "accumTime":user.accumTime,
+//          "param":param.users
         }
       }));
     } else{
@@ -72,11 +86,13 @@ app.post('/memberCheck', function(req, res) {
 });
 
 app.get('/main', function(req,res) {
-  res.render('main.ejs',{userName:req.query.name});
+  //console.log(param);
+  //console.log(req.query.accumTime);
+  res.render('main.ejs',{userName:req.query.name,accumTime:req.query.accumTime});
 });
 
 app.put('/admin/update', function(req,res) {
-  console.log(req.body.name);
+  //console.log(req.body.name);
 
   User.findOne({name:req.body.name}, function(err, user) {
     User.update({name:req.body.name},{$set:{accumTime:Number(user.accumTime)+Number(req.body.time)}}, function(err, output) {
