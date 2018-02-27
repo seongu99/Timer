@@ -60,25 +60,29 @@ app.post('/memberCheck', function(req, res) {
     if(err){
       return res.status(500).json({error:err});
     }else if(user){
-      //해당 유저 빼고 or 모든 유저 이름and시간 가져오기
-      var param = {
-      };
+
       User.find(function(err,users){
       if(err) return res.status(500).send({error: 'database failure'});
 
-      console.log(users);
-      console.log(JSON.stringify(users));
+      var i, count;
+      var userArr=[];
 
+      for (i = 0, count = users.length; i < count; i++) {
+         userArr.push(users[i]);
+      }
+      userArr = JSON.stringify(userArr);
+
+        res.redirect(url.format({
+          pathname:"/main",
+          query:{
+            "name":req.body.name,
+            "accumTime":user.accumTime,
+            "param":userArr
+          }
+        }));
       });
 
-      res.redirect(url.format({
-        pathname:"/main",
-        query:{
-          "name":req.body.name,
-          "accumTime":user.accumTime,
-//          "param":param.users
-        }
-      }));
+
     } else{
       res.redirect('/');
     }
@@ -86,9 +90,17 @@ app.post('/memberCheck', function(req, res) {
 });
 
 app.get('/main', function(req,res) {
-  //console.log(param);
+  //console.log(req.query.param);
+  //var i count;
+
+  // for(i = 0, count = users.length; i < count; i++) {
+  //
+  // }
+  //console.log(req.query);
   //console.log(req.query.accumTime);
-  res.render('main.ejs',{userName:req.query.name,accumTime:req.query.accumTime});
+  console.log(JSON.parse(req.query.param).length);
+  //console.log((req.query.param.length));
+  res.render('main.ejs',{userName:req.query.name,accumTime:req.query.accumTime,otherUsers:req.query.param});
 });
 
 app.put('/admin/update', function(req,res) {

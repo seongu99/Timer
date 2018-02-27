@@ -10,7 +10,12 @@
     <div class="wrap">
       <h1>메인 페이지입니다.</h1>
       <div class="otherUsers">
-
+        <ul>
+        <% for(var i=0; i<JSON.parse(otherUsers).length; i++) {%>
+           <li><%= JSON.parse(otherUsers)[i].name %></li>
+           <li><%= JSON.parse(otherUsers)[i].accumTime %></li>
+        <% } %>
+        </ul>
       </div>
       <div>
         <%=userName%>님 환영합니다.
