@@ -42,11 +42,10 @@ app.post('/signup', function(req, res) {
               console.log('New User Saved!'+data);
           }
       });
+
       res.redirect(url.format({
-        pathname:"/main",
-        query: {
-          "name":req.body.name
-        }
+        pathname:"/"
+
       }));
     } else{
       res.render('signup.ejs');
@@ -61,7 +60,7 @@ app.post('/memberCheck', function(req, res) {
       return res.status(500).json({error:err});
     }else if(user){
 
-      User.find(function(err,users){
+      User.find({}).sort({accumTime:-1}).exec(function(err,users){
       if(err) return res.status(500).send({error: 'database failure'});
 
       var i, count;
@@ -90,21 +89,10 @@ app.post('/memberCheck', function(req, res) {
 });
 
 app.get('/main', function(req,res) {
-  //console.log(req.query.param);
-  //var i count;
-
-  // for(i = 0, count = users.length; i < count; i++) {
-  //
-  // }
-  //console.log(req.query);
-  //console.log(req.query.accumTime);
-  console.log(JSON.parse(req.query.param).length);
-  //console.log((req.query.param.length));
   res.render('main.ejs',{userName:req.query.name,accumTime:req.query.accumTime,otherUsers:req.query.param});
 });
 
 app.put('/admin/update', function(req,res) {
-  //console.log(req.body.name);
 
   User.findOne({name:req.body.name}, function(err, user) {
     User.update({name:req.body.name},{$set:{accumTime:Number(user.accumTime)+Number(req.body.time)}}, function(err, output) {
