@@ -4,6 +4,7 @@ var app = express();
 var mongoose = require('mongoose');
 var url = require('url');
 var User = require('./models/user');
+var ip = require('ip');
 
 mongoose.connect('mongodb://localhost:27017/testDB3');
 var db = mongoose.connection;
@@ -33,6 +34,7 @@ app.post('/signup', function(req, res) {
     if(err){
       return res.status(500).json({error:err}) ;//webserver error
     } else if(!user) {
+      //console.dir ( ip.address() );
       var newUser = new User({name:req.body.name, pwd:req.body.pwd, email:req.body.email, accumTime:0});
 
       newUser.save(function(error, data){
@@ -89,6 +91,7 @@ app.post('/memberCheck', function(req, res) {
 });
 
 app.get('/main', function(req,res) {
+
   res.render('main.ejs',{userName:req.query.name,accumTime:req.query.accumTime,otherUsers:req.query.param});
 });
 
@@ -105,6 +108,7 @@ app.put('/admin/update', function(req,res) {
 
 
 });
+/*Usage example*/
 
 app.use(express.static(__dirname + '/public'));
 app.listen(3000, function(){
